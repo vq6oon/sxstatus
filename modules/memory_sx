@@ -1,8 +1,19 @@
 #!/bin/bash
 
-Icon="Mem:"
+# memory module for sxstatus
 
-Memory=$(free -h | awk NR==2'{print$3}')
+Mid=60
+High=85
 
-echo "$Icon $Memory"
+Used=$(free -h | awk 'NR==2{print $3}' | sed 's/i//')
+Percent=$(free | awk 'NR==2{printf "%d", $3/$2*100}')
 
+if [ "$Percent" -ge "$High" ]; then
+    Color="#c4696a"
+elif [ "$Percent" -ge "$Mid" ]; then
+    Color="#d6b36a"
+else
+    Color="#7bb0b5"
+fi
+
+echo "^c$Color^M $Used^d^"

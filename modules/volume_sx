@@ -1,7 +1,12 @@
 #!/bin/bash
 
-Icon="Vol:"
+# volume module for sxstatus (pipewire/wpctl)
 
-Volume=$(wpctl get-volume @DEFAULT_AUDIO_SINK@ | awk '{ print $2*100"%" }')
+Out=$(wpctl get-volume @DEFAULT_AUDIO_SINK@)
+Volume=$(echo "$Out" | awk '{ printf "%.0f", $2*100 }')
 
-echo "$Icon $Volume"
+if echo "$Out" | grep -q MUTED; then
+    echo "^c#c4696a^V mute^d^"
+else
+    echo "^c#8fa8bf^V $Volume%^d^"
+fi

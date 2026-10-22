@@ -1,18 +1,24 @@
 #!/bin/bash
 
-#Icon1=""      #good
-#Icon2=""      #mid
-#Icon3=""      #low
-Icon="Bat:"
+# battery module for sxstatus
 
-Battery=$(cat /sys/class/power_supply/BAT0/capacity)
-Midle="70"
-Low="20"
+Mid=70
+Low=20
 
-if [ "$Battery" -le "$Low" ] ; then
-        echo "$Icon $Battery%"
-elif [ "$Battery" -le "$Midle" ] ; then
-        echo "$Icon $Battery%"
+Bat=/sys/class/power_supply/BAT0
+[ -d "$Bat" ] || exit 0
+
+Capacity=$(cat "$Bat/capacity")
+Status=$(cat "$Bat/status")
+
+if [ "$Capacity" -le "$Low" ]; then
+    Color="#c4696a"
+elif [ "$Capacity" -le "$Mid" ]; then
+    Color="#d6b36a"
 else
-        echo "$Icon $Battery%"
+    Color="#7bb0b5"
 fi
+
+[ "$Status" = "Charging" ] && Plus="+"
+
+echo "^c$Color^B $Capacity%$Plus^d^"

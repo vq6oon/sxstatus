@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# media module for sxstatus (any MPRIS player via playerctl)
+
+State=$(playerctl status 2>/dev/null)
+Song=$(playerctl metadata --format '{{ artist }} - {{ title }}' 2>/dev/null | tr -d '^')
+
+case "$State" in
+    Playing) echo "^c#7bb0b5^♪ $Song^d^" ;;
+    Paused)  echo "^c#d6b36a^♪ $Song^d^" ;;
+    *)       echo "" ;;
+esac

@@ -1,5 +1,8 @@
 #!/bin/bash
 
-date '+%a %b %d %Y %r'
+# clock module for sxstatus
 
+Date=$(date '+%a %d %b')
+Time=$(date '+%-I:%M %p')
 
+echo "^c#8fa8bf^$Date ^c#f2e8b8^$Time^d^"
