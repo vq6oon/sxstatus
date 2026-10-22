@@ -19,6 +19,13 @@ else
     Color="#7bb0b5"
 fi
 
-[ "$Status" = "Charging" ] && Plus="+"
+if   [ "$Capacity" -ge 90 ]; then Icon=$'\uf240'
+elif [ "$Capacity" -ge 65 ]; then Icon=$'\uf241'
+elif [ "$Capacity" -ge 40 ]; then Icon=$'\uf242'
+elif [ "$Capacity" -ge 15 ]; then Icon=$'\uf243'
+else Icon=$'\uf244'
+fi
 
-echo "^c$Color^B $Capacity%$Plus^d^"
+[ "$Status" = "Charging" ] && Icon=$'\uf0e7'
+
+echo "^c$Color^$Icon $Capacity%^d^"

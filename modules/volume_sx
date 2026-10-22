@@ -6,7 +6,7 @@ Out=$(wpctl get-volume @DEFAULT_AUDIO_SINK@)
 Volume=$(echo "$Out" | awk '{ printf "%.0f", $2*100 }')
 
 if echo "$Out" | grep -q MUTED; then
-    echo "^c#c4696a^V mute^d^"
+    echo "^c#c4696a^$(printf '\uf026') -^d^"
 else
-    echo "^c#8fa8bf^V $Volume%^d^"
+    echo "^c#8fa8bf^$(printf '\uf028') $Volume%^d^"
 fi

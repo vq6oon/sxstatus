@@ -16,4 +16,4 @@ else
     Color="#7bb0b5"
 fi
 
-echo "^c$Color^M $Used^d^"
+echo "^c$Color^$(printf '\uf085') $Used^d^"
