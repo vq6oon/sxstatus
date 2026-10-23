@@ -2,6 +2,8 @@
 
 Accent="#7bb0b5"; Text="#f2e8b8"; Dim="#8fa8bf"
 . ~/.cache/wal/sxstatus-colors 2>/dev/null
+Text=$(xrdb -query 2>/dev/null | awk '$1=="dwm.normfgcolor:" {print $2; exit}')
+[ -n "$Text" ] || Text="#c4cdce"
 
 # volume module for sxstatus (pipewire/wpctl)
 
@@ -9,7 +11,7 @@ Out=$(wpctl get-volume @DEFAULT_AUDIO_SINK@)
 Volume=$(echo "$Out" | awk '{ printf "%.0f", $2*100 }')
 
 if echo "$Out" | grep -q MUTED; then
-    echo "^c#c4696a^$(printf '\uf026') -^d^"
+    echo "^c$Text^$(printf '\uf026')^c$Text^ -^d^"
 else
-    echo "^c$Dim^$(printf '\uf028') $Volume%^d^"
+    echo "^c$Text^$(printf '\uf028')^c$Text^ $Volume%^d^"
 fi

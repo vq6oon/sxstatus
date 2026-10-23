@@ -2,6 +2,8 @@
 
 Accent="#7bb0b5"; Text="#f2e8b8"; Dim="#8fa8bf"
 . ~/.cache/wal/sxstatus-colors 2>/dev/null
+Text=$(xrdb -query 2>/dev/null | awk '$1=="dwm.normfgcolor:" {print $2; exit}')
+[ -n "$Text" ] || Text="#c4cdce"
 
 Icon="Up:"
 
@@ -12,12 +14,12 @@ Uptime1=$(uptime -p | sed 's/up //')
 Uptime2=$(uptime -p | sed 's/up //' | cut -d ',' -f 1,2)
 
 if [ "$Check" = "hours," ] ; then	#more than 1 day
-	echo " $Icon $Uptime2 "
+	echo "^c$Text^ $Icon $Uptime2 ^d^"
 elif [ "$Check" = "day," ] ; then	#more than 1 week
-	echo " $Icon $Uptime2 "
+	echo "^c$Text^ $Icon $Uptime2 ^d^"
 elif [ "$Check" = "week," ] ; then 	#more than 1 month
-	echo " $Icon $Uptime2 "	
+	echo "^c$Text^ $Icon $Uptime2 ^d^"
 else
-	echo " $Icon $Uptime1 "
+	echo "^c$Text^ $Icon $Uptime1 ^d^"
 fi
 

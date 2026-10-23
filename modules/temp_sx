@@ -2,9 +2,11 @@
 
 Accent="#7bb0b5"; Text="#f2e8b8"; Dim="#8fa8bf"
 . ~/.cache/wal/sxstatus-colors 2>/dev/null
+Text=$(xrdb -query 2>/dev/null | awk '$1=="dwm.normfgcolor:" {print $2; exit}')
+[ -n "$Text" ] || Text="#c4cdce"
 
 Icon="Temp:"
 
 Temp=$(cat /sys/class/thermal/thermal_zone0/temp | awk '{ print $1/1000"°C" }')
 
-echo " $Icon $Temp "
+echo "^c$Text^ $Icon $Temp ^d^"

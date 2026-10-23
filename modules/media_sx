@@ -2,6 +2,8 @@
 
 Accent="#7bb0b5"; Text="#f2e8b8"; Dim="#8fa8bf"
 . ~/.cache/wal/sxstatus-colors 2>/dev/null
+Text=$(xrdb -query 2>/dev/null | awk '$1=="dwm.normfgcolor:" {print $2; exit}')
+[ -n "$Text" ] || Text="#c4cdce"
 
 # media module for sxstatus (any MPRIS player via playerctl, browsers ignored)
 
@@ -11,7 +13,7 @@ State=$(playerctl -i "$Ignore" status 2>/dev/null)
 Song=$(playerctl -i "$Ignore" metadata --format '{{ artist }} - {{ title }}' 2>/dev/null | tr -d '^')
 
 case "$State" in
-Playing) echo "^c$Accent^$(printf '\uf001') $Song^d^" ;;
-Paused)  echo "^c#d6b36a^$(printf '\uf001') $Song^d^" ;;
+Playing) echo "^c$Text^$(printf '\uf001')^c$Text^ $Song^d^" ;;
+Paused)  echo "^c$Text^$(printf '\uf001')^c$Text^ $Song^d^" ;;
 *)       echo "" ;;
 esac

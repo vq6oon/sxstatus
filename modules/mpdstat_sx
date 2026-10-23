@@ -2,6 +2,8 @@
 
 Accent="#7bb0b5"; Text="#f2e8b8"; Dim="#8fa8bf"
 . ~/.cache/wal/sxstatus-colors 2>/dev/null
+Text=$(xrdb -query 2>/dev/null | awk '$1=="dwm.normfgcolor:" {print $2; exit}')
+[ -n "$Text" ] || Text="#c4cdce"
 
 Icon="Mus:"
 
@@ -9,9 +11,9 @@ Song=$(mpc current)
 Stat=$(mpc status | awk 'NR==2{print $1}' | sed 's/\[//g' | sed 's/\]//g')
 
 if [ "$Stat" = "playing" ] ; then
-        echo "$Icon $Song"
+        echo "^c$Text^$Icon $Song^d^"
 elif [ "$Stat" = "paused" ] ; then
-        echo "Paused $Icon $Song"
+        echo "^c$Text^Paused $Icon $Song^d^"
 else
         echo ""
 fi

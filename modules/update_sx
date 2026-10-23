@@ -2,10 +2,12 @@
 
 Accent="#7bb0b5"; Text="#f2e8b8"; Dim="#8fa8bf"
 . ~/.cache/wal/sxstatus-colors 2>/dev/null
+Text=$(xrdb -query 2>/dev/null | awk '$1=="dwm.normfgcolor:" {print $2; exit}')
+[ -n "$Text" ] || Text="#c4cdce"
 
 Icon="Upd:"
 
 Update=$(apt list --upgradable 2>/dev/null | wc -l)
 
-echo "$Icon $Update"
+echo "^c$Text^$Icon $Update^d^"
 
