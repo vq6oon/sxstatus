@@ -1,5 +1,8 @@
 #!/bin/bash
 
+Accent="#7bb0b5"; Text="#f2e8b8"; Dim="#8fa8bf"
+. ~/.cache/wal/sxstatus-colors 2>/dev/null
+
 # memory module for sxstatus
 
 Mid=60
@@ -13,7 +16,7 @@ if [ "$Percent" -ge "$High" ]; then
 elif [ "$Percent" -ge "$Mid" ]; then
     Color="#d6b36a"
 else
-    Color="#7bb0b5"
+    Color="$Accent"
 fi
 
 echo "^c$Color^$(printf '\uf085') $Used^d^"
