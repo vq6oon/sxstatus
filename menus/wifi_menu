@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# wifi menu for dmenu (NetworkManager)
+
+Menu() { dmenu -i -l 12 -p "$1"; }
+
+if [ "$(nmcli radio wifi)" = "enabled" ]; then
+    Toggle="Turn wifi off"
+else
+    Toggle="Turn wifi on"
+fi
+
+Nets=$(nmcli -t --escape no -f SIGNAL,SECURITY,SSID device wifi list 2>/dev/null \
+    | awk -F: '{ s=$3; for (i=4; i<=NF; i++) s=s":"$i; if (s != "") printf "%s%% | %s | %s\n", $1, ($2==""?"open":$2), s }')
+
+Choice=$(printf '%s\n' "$Toggle" "Rescan" "Advanced (nmtui)" "$Nets" | Menu wifi)
+[ -n "$Choice" ] || exit 0
+
+case "$Choice" in
+    "Turn wifi off")     nmcli radio wifi off ;;
+    "Turn wifi on")      nmcli radio wifi on ;;
+    "Rescan")            nmcli device wifi rescan; exec "$0" ;;
+    "Advanced (nmtui)")  exec kitty -e nmtui ;;
+    *)
+        Ssid=${Choice##* | }
+        nmcli device wifi connect "$Ssid" || kitty -e nmtui-connect "$Ssid"
+        ;;
+esac

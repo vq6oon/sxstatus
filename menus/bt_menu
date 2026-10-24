@@ -1,0 +1,36 @@
+#!/bin/bash
+
+# bluetooth menu for dmenu (bluez)
+
+Menu() { dmenu -i -l 12 -p "$1"; }
+
+if bluetoothctl show 2>/dev/null | grep -q 'Powered: yes'; then
+    Toggle="Turn bluetooth off"
+else
+    Toggle="Turn bluetooth on"
+fi
+
+Devices=$(bluetoothctl devices 2>/dev/null | while read -r _ Mac Name; do
+    if bluetoothctl info "$Mac" 2>/dev/null | grep -q 'Connected: yes'; then
+        printf '* %s | %s\n' "$Name" "$Mac"
+    else
+        printf '  %s | %s\n' "$Name" "$Mac"
+    fi
+done)
+
+Choice=$(printf '%s\n' "$Toggle" "Scan for devices (10s)" "$Devices" | Menu bluetooth)
+[ -n "$Choice" ] || exit 0
+
+case "$Choice" in
+    "Turn bluetooth off")        bluetoothctl power off ;;
+    "Turn bluetooth on")         rfkill unblock bluetooth 2>/dev/null; bluetoothctl power on ;;
+    "Scan for devices (10s)")    bluetoothctl --timeout 10 scan on >/dev/null; exec "$0" ;;
+    *)
+        Mac=${Choice##* | }
+        if bluetoothctl info "$Mac" | grep -q 'Connected: yes'; then
+            bluetoothctl disconnect "$Mac"
+        else
+            bluetoothctl connect "$Mac" || { bluetoothctl pair "$Mac" && bluetoothctl trust "$Mac" && bluetoothctl connect "$Mac"; }
+        fi
+        ;;
+esac
