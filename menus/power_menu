@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# power profile menu for dmenu (power-profiles-daemon)
+
+Menu() { dmenu -i -l 5 -p "$1"; }
+
+Cur=$(powerprofilesctl get 2>/dev/null)
+Mark() { [ "$Cur" = "$1" ] && printf '* ' || printf '  '; }
+
+Choice=$(printf '%s\n' \
+    "$(Mark performance)performance" \
+    "$(Mark balanced)balanced" \
+    "$(Mark power-saver)power-saver" | Menu power)
+[ -n "$Choice" ] || exit 0
+
+Profile=${Choice##* }
+powerprofilesctl set "$Profile" && notify-send "Power profile" "$Profile"
