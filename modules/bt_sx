@@ -1,0 +1,17 @@
+#!/bin/bash
+
+Text=$(xrdb -query 2>/dev/null | awk '$1=="dwm.normfgcolor:" {print $2; exit}')
+[ -n "$Text" ] || Text="#c4cdce"
+
+# bluetooth module for sxstatus (bluez)
+
+Icon=$(printf '\uf293')
+
+if ! bluetoothctl show 2>/dev/null | grep -q 'Powered: yes'; then
+    echo "^c$Text^$Icon off^d^"
+    exit 0
+fi
+
+Name=$(bluetoothctl devices Connected 2>/dev/null | head -n1 | cut -d' ' -f3- | tr -d '^' | cut -c1-14)
+
+echo "^c$Text^$Icon ${Name:--}^d^"

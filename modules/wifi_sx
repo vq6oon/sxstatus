@@ -1,0 +1,26 @@
+#!/bin/bash
+
+Text=$(xrdb -query 2>/dev/null | awk '$1=="dwm.normfgcolor:" {print $2; exit}')
+[ -n "$Text" ] || Text="#c4cdce"
+
+# network module for sxstatus: LAN first, then wifi (NetworkManager)
+
+Wifi=$(printf '\uf1eb')
+Lan=$(printf '\uf0e8')
+
+Dev=$(nmcli -t --escape no -f TYPE,STATE,CONNECTION device 2>/dev/null)
+
+# ethernet connected
+if echo "$Dev" | awk -F: '$1=="ethernet" && $2 ~ /^connected/ {f=1} END{exit !f}'; then
+    echo "^c$Text^$Lan LAN^d^"
+    exit 0
+fi
+
+if [ "$(nmcli radio wifi 2>/dev/null)" != "enabled" ]; then
+    echo "^c$Text^$Wifi off^d^"
+    exit 0
+fi
+
+Name=$(echo "$Dev" | awk -F: '$1=="wifi" && $2 ~ /^connected/ {n=$3; for (i=4; i<=NF; i++) n=n":"$i; print n; exit}' | tr -d '^' | cut -c1-14)
+
+echo "^c$Text^$Wifi ${Name:--}^d^"
