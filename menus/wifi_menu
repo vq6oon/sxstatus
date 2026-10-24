@@ -2,7 +2,7 @@
 
 # wifi menu for dmenu (NetworkManager)
 
-Menu() { dmenu -i -l 12 -p "$1"; }
+Menu() { "$(dirname "$(readlink -f "$0")")/dmenu_sx" -i -l 12 -p "$1"; }
 
 if [ "$(nmcli radio wifi)" = "enabled" ]; then
     Toggle="Turn wifi off"

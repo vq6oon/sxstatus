@@ -2,7 +2,7 @@
 
 # power profile menu for dmenu (power-profiles-daemon)
 
-Menu() { dmenu -i -l 5 -p "$1"; }
+Menu() { "$(dirname "$(readlink -f "$0")")/dmenu_sx" -i -l 5 -p "$1"; }
 
 Cur=$(powerprofilesctl get 2>/dev/null)
 Mark() { [ "$Cur" = "$1" ] && printf '* ' || printf '  '; }

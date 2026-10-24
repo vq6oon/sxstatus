@@ -2,7 +2,7 @@
 
 # bluetooth menu for dmenu (bluez)
 
-Menu() { dmenu -i -l 12 -p "$1"; }
+Menu() { "$(dirname "$(readlink -f "$0")")/dmenu_sx" -i -l 12 -p "$1"; }
 
 if bluetoothctl show 2>/dev/null | grep -q 'Powered: yes'; then
     Toggle="Turn bluetooth off"

@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# dmenu with colors from the dwm bar and the wallpaper accent
+
+Get() { xrdb -query 2>/dev/null | awk -v k="dwm.$1:" '$1==k {print $2; exit}'; }
+
+Bg=$(Get normbgcolor); [ -n "$Bg" ] || Bg="#222222"
+Fg=$(Get normfgcolor); [ -n "$Fg" ] || Fg="#bbbbbb"
+Sel=$(Get selbgcolor); [ -n "$Sel" ] || Sel="#005577"
+
+Accent=""
+. ~/.cache/wal/sxstatus-colors 2>/dev/null
+[ -n "$Accent" ] && Sel="$Accent"
+
+exec dmenu -nb "$Bg" -nf "$Fg" -sb "$Sel" -sf "$Bg" -fn "monospace:size=10" "$@"
