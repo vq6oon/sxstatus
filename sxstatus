@@ -1,9 +1,10 @@
 #!/bin/bash
 
 export PATH="${PATH}:$HOME/.config/sxstatus/modules"
+export LANG=C.UTF-8
 
 while true; do
     Mus=$(media_sx)
-    xsetroot -name "${Mus:+$Mus  }$(memory_sx) $(battery_sx) $(volume_sx) $(clock_sx)"
+    xsetroot -name "${Mus:+$Mus  }$(memory_sx) $(battery_sx) $(volume_sx) $(wifi_sx) $(bt_sx) $(clock_sx)"
     sleep 2
 done
