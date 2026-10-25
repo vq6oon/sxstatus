@@ -1,0 +1,52 @@
+#!/bin/bash
+
+# picom mode menu for dmenu
+# usage: picom_menu          open the menu
+#        picom_menu restore  start picom in the last chosen mode (for login)
+
+Dir="$HOME/.config/picom"
+ModeFile="$Dir/mode"
+Self=$(dirname "$(readlink -f "$0")")
+
+Apply() {
+    pkill -x picom
+    for _ in $(seq 20); do pgrep -x picom >/dev/null || break; sleep 0.1; done
+    case "$1" in
+        blur|opacity|vsync) picom --config "$Dir/picom-$1.conf" -b ;;
+    esac
+    echo "$1" > "$ModeFile"
+}
+
+if [ "$1" = "restore" ]; then
+    Apply "$(cat "$ModeFile" 2>/dev/null || echo opacity)"
+    exit 0
+fi
+
+# detect the running mode
+Args=$(pgrep -ax picom)
+case "$Args" in
+    *picom-blur.conf*)    Cur=blur ;;
+    *picom-opacity.conf*) Cur=opacity ;;
+    *picom-vsync.conf*)   Cur=vsync ;;
+    "")                   Cur=off ;;
+    *)                    Cur=other ;;
+esac
+Mark() { [ "$Cur" = "$1" ] && printf '* ' || printf '  '; }
+
+Choice=$(printf '%s\n' \
+    "$(Mark blur)blur + opacity + vsync" \
+    "$(Mark opacity)opacity + vsync" \
+    "$(Mark vsync)vsync only" \
+    "$(Mark off)off" | "$Self/dmenu_sx" -i -l 6 -p picom)
+[ -n "$Choice" ] || exit 0
+
+case "${Choice:2}" in
+    "blur + opacity + vsync") Mode=blur ;;
+    "opacity + vsync")        Mode=opacity ;;
+    "vsync only")             Mode=vsync ;;
+    "off")                    Mode=off ;;   # delete this line and the "off" entry above to remove it
+    *) exit 0 ;;
+esac
+
+Apply "$Mode"
+notify-send "Picom" "$Mode"
