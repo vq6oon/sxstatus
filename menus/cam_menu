@@ -1,0 +1,38 @@
+#!/bin/bash
+
+# camera mirror menu for dmenu
+# the mirrored feed goes to /dev/video10, pick it in Discord, OBS, Firefox...
+
+Cam=/dev/video1
+Out=/dev/video10
+Log=/tmp/cam_mirror.log
+Self=$(dirname "$(readlink -f "$0")")
+
+Running() { pgrep -f "v4l2 $Out" >/dev/null; }
+
+if Running; then Cur=on; else Cur=off; fi
+Mark() { [ "$Cur" = "$1" ] && printf '* ' || printf '  '; }
+
+Choice=$(printf '%s\n' "$(Mark on)mirror on" "$(Mark off)mirror off" | "$Self/dmenu_sx" -i -l 3 -p camera)
+[ -n "$Choice" ] || exit 0
+
+case "${Choice:2}" in
+    "mirror on")
+        Running && { notify-send "Camera mirror" "already on"; exit 0; }
+        [ -e "$Out" ] || { notify-send -u critical "Camera mirror" "$Out not found, is v4l2loopback loaded?"; exit 1; }
+        [ -e "$Cam" ] || { notify-send -u critical "Camera mirror" "$Cam not found"; exit 1; }
+        setsid -f ffmpeg -nostdin -loglevel error -fflags nobuffer -flags low_delay \
+            -f v4l2 -input_format mjpeg -video_size 1280x720 -framerate 30 -i "$Cam" \
+            -vf hflip -pix_fmt yuyv422 -f v4l2 "$Out" 2>"$Log"
+        sleep 1
+        if Running; then
+            notify-send "Camera mirror" "on, pick $Out in your app"
+        else
+            notify-send -u critical "Camera mirror" "ffmpeg stopped: $(head -n1 "$Log")"
+        fi
+        ;;
+    "mirror off")
+        pkill -f "v4l2 $Out"
+        notify-send "Camera mirror" "off"
+        ;;
+esac
