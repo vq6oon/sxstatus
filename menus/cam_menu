@@ -1,14 +1,16 @@
 #!/bin/bash
 
 # camera mirror menu for dmenu
-# the mirrored feed goes to /dev/video10, pick it in Discord, OBS, Firefox...
+# the mirrored feed goes to $Out (a v4l2loopback device), pick it in Discord, OBS, Firefox...
 
-Cam=/dev/video1
+# /dev/videoN numbers change between reboots, so use the stable by-id path
+# (list yours with: ls /dev/v4l/by-id/ and pick the one ending in index0)
+Cam=/dev/v4l/by-id/usb-Sunplus_IT_Co_PC_Camera-video-index0
 Out=/dev/video10
 Log=/tmp/cam_mirror.log
 Self=$(dirname "$(readlink -f "$0")")
 
-Running() { pgrep -f "v4l2 $Out" >/dev/null; }
+Running() { pgrep -f "ffmpeg.*$Out" >/dev/null; }
 
 if Running; then Cur=on; else Cur=off; fi
 Mark() { [ "$Cur" = "$1" ] && printf '* ' || printf '  '; }
@@ -20,19 +22,19 @@ case "${Choice:2}" in
     "mirror on")
         Running && { notify-send "Camera mirror" "already on"; exit 0; }
         [ -e "$Out" ] || { notify-send -u critical "Camera mirror" "$Out not found, is v4l2loopback loaded?"; exit 1; }
-        [ -e "$Cam" ] || { notify-send -u critical "Camera mirror" "$Cam not found"; exit 1; }
+        [ -e "$Cam" ] || { notify-send -u critical "Camera mirror" "camera not found: $Cam"; exit 1; }
         setsid -f ffmpeg -nostdin -loglevel error -fflags nobuffer -flags low_delay \
             -f v4l2 -input_format mjpeg -video_size 1280x720 -framerate 30 -i "$Cam" \
             -vf hflip -pix_fmt yuyv422 -f v4l2 "$Out" 2>"$Log"
         sleep 1
         if Running; then
-            notify-send "Camera mirror" "on, pick $Out in your app"
+            notify-send "Camera mirror" "on, the feed is on $Out"
         else
             notify-send -u critical "Camera mirror" "ffmpeg stopped: $(head -n1 "$Log")"
         fi
         ;;
     "mirror off")
-        pkill -f "v4l2 $Out"
+        pkill -f "ffmpeg.*$Out"
         notify-send "Camera mirror" "off"
         ;;
 esac
