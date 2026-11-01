@@ -6,7 +6,7 @@
 # /dev/videoN numbers change between reboots, so use the stable by-id path
 # (list yours with: ls /dev/v4l/by-id/ and pick the one ending in index0)
 Cam=/dev/v4l/by-id/usb-Sunplus_IT_Co_PC_Camera-video-index0
-Out=/dev/video10
+Out=/dev/video2
 Log=/tmp/cam_mirror.log
 Self=$(dirname "$(readlink -f "$0")")
 
