@@ -3,8 +3,30 @@
 export PATH="${PATH}:$HOME/.config/sxstatus/modules"
 export LANG=C.UTF-8
 
+Sep=" | "
+
+Seg() {
+    local b
+    [ -n "$2" ] || return 0
+    printf -v b "\\$(printf '%03o' "$1")"
+    printf '%s%s%s' "$b" "$2" "$b"
+}
+
+add() { [ -n "$1" ] && Out="${Out:+$Out$Sep}$1"; }
+
+Plain() { sed -E 's/\^[a-z][^^]*\^//g'; }
+
 while true; do
-    Mus=$(media_sx)
-    xsetroot -name "${Mus:+$Mus  }$(memory_sx) $(battery_sx) $(volume_sx) $(wifi_sx) $(bt_sx) $(clock_sx)"
+    Out=""
+    add "$(Seg 1 "$(media_sx)")"
+    add "$(Seg 2 "$(memory_sx)")"
+    add "$(Seg 3 "$(battery_sx)")"
+    add "$(Seg 4 "$(volume_sx)")"
+    add "$(Seg 5 "$(wifi_sx)")"
+    add "$(Seg 6 "$(bt_sx)")"
+    add "$(Seg 7 "$(cal_sx)")"
+    add "$(Seg 8 "$(clock_sx)")"
+    
+    xsetroot -name "$(printf '%s' "$Out" | Plain)"
     sleep 2
 done
