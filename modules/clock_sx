@@ -5,9 +5,6 @@ Accent="#7bb0b5"; Text="#f2e8b8"; Dim="#8fa8bf"
 Text=$(xrdb -query 2>/dev/null | awk '$1=="dwm.normfgcolor:" {print $2; exit}')
 [ -n "$Text" ] || Text="#c4cdce"
 
-# clock module for sxstatus
+Time=$(date '+%-I:%M:%S %p')
 
-Date=$(date '+%a %d %b')
-Time=$(date '+%-I:%M %p')
-
-echo "^c$Text^$Date $Time^d^"
+echo "^c$Text^$Time^d^"
